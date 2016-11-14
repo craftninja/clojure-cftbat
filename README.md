@@ -12,6 +12,14 @@ Steps taken to "get here"
     * `clojure-noob-0.1.0-SNAPSHOT-standalone.jar`
     * `clojure-noob-0.1.0-SNAPSHOT.jar`
   * `$ java -jar target/uberjar/clojure-noob-0.1.0-SNAPSHOT-standalone.jar`
+1. Use and play with the lein REPL
+  * `$ lein repl`
+  * Note that within the REPL, you are in the `clojure-noob.core` namespace. The only function defined is `-main`, and we can execute that function with `=> (-main)`
+  * Also within the REPL, we can execute some basic Clojure functions:
+    * `=> (+ 1 2 3 4)`
+    * `=> (* 1 2 3 4)`
+    * `=> (first [1 2 3 4])`
+  * exit the REPL with `=> exit`
 
 ---
 
