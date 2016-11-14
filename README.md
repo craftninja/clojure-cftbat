@@ -7,6 +7,11 @@ Steps taken to "get here"
   1. `$ lein new app clojure-noob`
   1. open `src/clojure-noob/core.clj` and edit the print statement
   1. compile and run in terminal with `$ lein run`
+1. Create and run a standalone java file to distribute and for others to run (within the ignored directory target)
+  * `$ lein uberjar` - creates two new files
+    * `clojure-noob-0.1.0-SNAPSHOT-standalone.jar`
+    * `clojure-noob-0.1.0-SNAPSHOT.jar`
+  * `$ java -jar target/uberjar/clojure-noob-0.1.0-SNAPSHOT-standalone.jar`
 
 ---
 
