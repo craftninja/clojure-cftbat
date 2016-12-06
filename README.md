@@ -26,6 +26,8 @@ Steps taken to "get here"
 1. Install Parinfer
 
 ### Chapter Three - Do Things: A Clojure Crash Course
+
+#### Operators
 1. general form: `(operator operand1 operand2 ... operandn)`
 1. no need for commas between operands (aka arguments), commas are "turned into" whitespace
 1. `if` operator
@@ -79,46 +81,50 @@ Steps taken to "get here"
   ; => nil
   ```
 
-1. bind a name to a value (like assign value to a variable, but there are no variables in Clojure)
+1. `def` binds names to values
+  * bind a name to a value (like assign value to a variable, but there are no variables in Clojure)
 
-  ```clojure
-  (def awesome-peeps
-    ["Elowyn Platzer Bartel" "Emily Platzer" "Luke Bartel"])
-  ```
+    ```clojure
+    (def awesome-peeps
+      ["Elowyn Platzer Bartel" "Emily Platzer" "Luke Bartel"])
+    ```
 
-1. building up strings is different since there are no variables. No mutation!
+  * building up strings is different since there are no variables. No mutation!
 
-  Ruby is cool with mutation:
+    Ruby is cool with mutation:
 
-  ```rb
-  severity = :mild
-  error_message = "OH GOD! IT'S A DISASTER! WE'RE "
-  if severity == :mild
-    error_message = error_message + "MILDLY INCONVENIENCED!"
-  else
-    error_message = error_message + "DOOOOOOOMED!"
-  end
-  ```
+    ```rb
+    severity = :mild
+    error_message = "OH GOD! IT'S A DISASTER! WE'RE "
+    if severity == :mild
+      error_message = error_message + "MILDLY INCONVENIENCED!"
+    else
+      error_message = error_message + "DOOOOOOOMED!"
+    end
+    ```
 
-  In Clojure, we do it without mutation:
+    In Clojure, we do it without mutation:
 
-  ```clojure
-  (defn error-message
-    [severity]
-    (str "OH GOD! IT'S A DISASTER! WE'RE "
-         (if (= severity :mild)
-           "MILDLY INCONVENIENCED!"
-           "DOOOOOOOMED!")))
+    ```clojure
+    (defn error-message
+      [severity]
+      (str "OH GOD! IT'S A DISASTER! WE'RE "
+           (if (= severity :mild)
+             "MILDLY INCONVENIENCED!"
+             "DOOOOOOOMED!")))
 
-  (error-message :mild)
-  ; => "OH GOD! IT'S A DISASTER! WE'RE MILDLY INCONVENIENCED!"
-  ```
+    (error-message :mild)
+    ; => "OH GOD! IT'S A DISASTER! WE'RE MILDLY INCONVENIENCED!"
+    ```
 
+#### Data structures
+
+1. Numbers - integers, floats, and ratios are handled well
 1. Strings
   * double quotes
   * concat via function `str` that returns new string
 1. Maps (aka hashes / objects in other languages)
-  * are hash maps OR sorted maps
+  * can be hash maps OR sorted maps
   * keys are keywords `:first-name`
   * values are any type... strings, numbers, maps, vectors (aka arrays), or functions
   * defined by using hash literal or function:
@@ -180,7 +186,116 @@ Steps taken to "get here"
     ; => (0 1 2 3)
     ```
 
-1. Sets
+1. Sets - hashed and sorted. Hashed is more often used. duplicates are eliminated on creation or on `conj` function. can be created from lists or vectors with `set` function. Check for membership with `contains?` function (returns boolean), the keyword you are looking for (returns keyword or nil), or `get` (returns keyword or nil).
+  * literal or `hash-set` function
+    * `#{"kurt vonnegut" 20 :icicle} ; => #{20 :icicle "kurt vonnegut"}`
+    * `(hash-set (hash-set 1 1 2 2)) ; => #{1 2}`
+  * `(conj #{:a :b} :b) ; => #{:a :b}`
+  * `(set [3 3 3 4 4]) ; => #{3 4}`
+  * `(contains? #{:a :b} :a) ; => true`
+  * `(:a #{:a :b}) ; => :a`
+  * `(get #{:a :b} :a) ; => :a`
+
+#### Functions - calling, diff between funct and macros/special forms, defining, anonymous, and returning functions
+
+Calling
+* reminder: Clojure operations all have the same syntax: opening parens, operator, operand(s), closing parens.
+* A function call is an operation where the operator is a function or function expression
+* A function expression is a function that returns a function
+  * simple function expression `(or + -)`
+  * function expressions can be used as the operator to another function `((or + -) 1 2 3)`
+* functions can also be operands (arguments passed in an operation) `(map inc [0 1 2 3])`
+
+Function Calls, Macro Calls, and Special Forms
+* function calls have a function expression as the operator
+* macros - later.
+  * cannot be used as arguments to functions
+* special forms
+  * don't always evaluate all of their operands
+  * some we have seen so far:
+    * `def`
+    * `if`
+  * cannot be used as arguments to functions
+
+Defining functions
+  * five main parts:
+    * `defn`
+    * Function name
+    * A docstring describing the function (optional)
+    * Parameters listed in brackets
+    * Function body
+  * example:
+
+    ```clojure
+    (defn too-enthusiastic
+      "Return a cheer that might be a bit too enthusiastic"
+      [name]
+      (str "OH. MY. GOD! " name " YOU ARE MOST DEFINITELY LIKE THE BEST "
+        "MAN SLASH WOMAN EVER I LOVE YOU AND WE SHOULD RUN AWAY SOMEWHERE"))
+
+    (too-enthusiastic "Zelda")
+    ; => "OH. MY. GOD! Zelda YOU ARE MOST DEFINITELY LIKE THE BEST MAN SLASH WOMAN EVER I LOVE YOU AND WE SHOULD RUN AWAY SOMEWHERE"
+    ```
+  * docstring can be accessed with function `doc` and operand of function name: `(doc map)`
+  * number of args must match number of params, but arity overloading can be defined...
+
+    ```clojure
+    (defn x-chop
+      "Describe the kind of chop you're inflicting on someone"
+      ([name chop-type]
+         (str "I " chop-type " chop " name "! Take that!")) ; note that each arity definition is enclosed with parens
+      ([name]
+         (x-chop name "karate")))
+
+    (x-chop "Kanye West" "slap")
+    ; => "I slap chop Kanye West! Take that!"
+    (x-chop "Kanye East")
+    ; => "I karate chop Kanye East! Take that!"
+    ```
+
+  * for a variable number of params, use the `&` followed by the name of the list in which the "rest" will be stored
+
+    ```clojure
+    (defn team-list
+      "Name team name and all the members of the team"
+      [team-name & members]
+      (str "Members of team " team-name ": "
+        (clojure.string/join ", " members)))
+
+    ```
+
+    ```clojure
+    (defn codger-communication
+      [whippersnapper]
+      (str "Get off my lawn, " whippersnapper "!!!"))
+
+    (defn codger
+      [& whippersnappers]
+      (map codger-communication whippersnappers))
+
+      (codger "Billy" "Anne-Marie" "The Incredible Bulk")
+      ; => ("Get off my lawn, Billy!!!" "Get off my lawn, Anne-Marie!!!" "Get off my lawn, The Incredible Bulk!!!")
+    ```
+
+  * destructuring a collection passed in as param
+
+    * lists or vectors:
+
+      ```clojure
+      (defn my-first
+        [[first-thing]] ; Notice that first-thing is within a vector
+        first-thing)
+
+      (my-first ["oven" "bike" "war-axe"])
+      ; => "oven"
+      ```
+
+    * maps:
+
+
+
+
+
 ---
 
 Autogenerated README from `lein new app clojure-noob` below
